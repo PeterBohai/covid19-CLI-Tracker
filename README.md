@@ -9,3 +9,6 @@ The CLI is a Python script utilizing the following external libraries:
 * beautifulsoup4
 * requests
 * tabulate
+
+### Screenshots
+<img src="screenshots/screenshot-1.png" width=600>
