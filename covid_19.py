@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from tabulate import tabulate
 import datetime
+import pytz
 
 url = "https://www.worldometers.info/coronavirus/"
 source = requests.get(url).text
@@ -37,6 +38,10 @@ curr_time = datetime.datetime.now()
 date_text = curr_time.strftime("%b %d, %Y")
 time_text = curr_time.strftime("%A %I:%M %p")
 
+curr_utc = curr_time.astimezone(pytz.utc)
+curr_gmt = curr_utc.astimezone(pytz.timezone("GMT"))
+gmt_text = "[" + curr_gmt.strftime("%m-%d-%Y %I:%M %p %Z%z") + "]\n"
+
 table_rows = table.split("\n")
 table_width = len(table_rows[0])
 try:
@@ -56,9 +61,10 @@ note_text = ["  --> 'New' displays the live changes for the current day",
 # Display data
 print()
 
-print(title_text.center(terminal_width))
+print(title_text.center(terminal_width) + "\n")
 print(date_text.center(terminal_width))
-print(time_text.center(terminal_width) + "\n")
+print(time_text.center(terminal_width))
+print(gmt_text.center(terminal_width))
 
 for row in table_rows:
     print(left_ws + row)
