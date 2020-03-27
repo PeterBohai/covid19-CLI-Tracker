@@ -24,4 +24,6 @@ The CLI is a Python script utilizing the following external libraries:
 To change the parser, simply change the second string argument in the initialization of the BeautifulSoup object. For more details concerning installation of parsers (as well as their differences), please refer to the [official reference](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-a-parser).
 
 ### Screenshots
-<img src="screenshots/screenshot-1.png" width=600>
+<p align="center">
+	<img src="screenshots/screenshot-1.png" width=400>
+</p>
