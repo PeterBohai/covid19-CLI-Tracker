@@ -45,7 +45,7 @@ def format_and_display(data_table, center_headers=True):
     date_text = now_local.strftime("%b %d, %Y")
     time_text = now_local.strftime("%A %I:%M %p")
 
-    now_utc = now_local.astimezone(pytz.utc)
+    now_utc = datetime.datetime.now(pytz.timezone("UTC"))
     now_gmt = now_utc.astimezone(pytz.timezone("GMT"))
     gmt_text = "[" + now_gmt.strftime("%m-%d-%Y %I:%M %p %Z%z") + "]\n"
 
