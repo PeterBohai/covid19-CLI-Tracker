@@ -102,10 +102,10 @@ def format_and_display_cli(data_table, center_headers=True):
     print(gmt_text.center(terminal_width))
 
     for row in table_rows:
-        print(left_whitespace_offset + row)
+        print(row.center(terminal_width))
 
     print()
-    print(left_whitespace_offset + "Note:")
+    print("Note".center(terminal_width))
     for line in note_text:
         print(left_whitespace_offset + line)
 
