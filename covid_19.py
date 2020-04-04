@@ -2,9 +2,21 @@ import os
 import datetime
 
 from bs4 import BeautifulSoup
+import colorama
 import pytz
 import requests
 from tabulate import tabulate
+
+
+class Style:
+    RESET = "\033[0m"
+    RED = "\033[31m"
+    BLUE_D = "\033[34m"
+    BLUE_L = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[33m"
+    UNDERLINE = "\033[4m"
+    BOLD = "\033[1m"
 
 
 def in_terminal():
@@ -29,26 +41,60 @@ def extract_data(target_countries_list):
         if country.find("td").get_text() in target_countries_list:
             data_cols = country.find_all("td")
 
-            name = data_cols[0].get_text()
-            cases = data_cols[1].get_text()
-            deaths = data_cols[3].get_text()
+            name = data_cols[0].get_text().strip()
+            tot_cases = Style.RED + data_cols[1].get_text().strip() + Style.RESET
+            act_cases = Style.YELLOW + data_cols[6].get_text().strip() + Style.RESET
+            deaths = Style.BLUE_D + data_cols[3].get_text().strip() + Style.RESET
 
-            new_cases = data_cols[2].get_text()
-            new_deaths = data_cols[4].get_text()
+            new_cases = data_cols[2].get_text().strip()
+            new_deaths = data_cols[4].get_text().strip()
 
-            data_matrix.append([name, cases, new_cases, deaths, new_deaths])
+            data_matrix.append([name, tot_cases, act_cases, new_cases, deaths, new_deaths])
 
-    data_matrix = sorted(data_matrix, key=lambda row: int(row[1].replace(",", "")), reverse=True)
+    def strip_ansi(row):
+        new_str = row[1].replace(",", "")
+        num_start = -1
+        num_end = -1
+
+        for i, char in enumerate(new_str):
+            if num_start != -1:
+                if not char.isdigit():
+                    num_end = i
+                    break
+            if char == "m":
+                num_start = i + 1
+        return int(new_str[num_start:num_end])
+
+    data_matrix = sorted(data_matrix, key=strip_ansi, reverse=True)
 
     return data_matrix
 
 
+def force_align(table_rows, row_index, colalign="center"):
+
+    for row_num in row_index:
+        split = table_rows[row_num].split("│")
+
+        for i, header_str in enumerate(split):
+            col_width = len(header_str)
+            stripped_header = header_str.strip()
+
+            if colalign == "left":
+                split[i] = stripped_header.ljust(col_width)
+            elif colalign == "right":
+                split[i] = stripped_header.rjust(col_width)
+            else:
+                split[i] = stripped_header.center(col_width)
+
+        table_rows[row_num] = "│".join(split)
+
+
 def format_and_display_cli(data_table, center_headers=True):
-    title_text = "Coronavirus (COVID-19) Tracker for Countries of Interest"
+    title_text = Style.UNDERLINE + "Coronavirus (COVID-19) Tracker for Countries of Interest" + Style.RESET
 
     now_utc = datetime.datetime.now(pytz.timezone("UTC"))
     now_local = datetime.datetime.now()
-    date_text = now_local.strftime("%b %d, %Y")
+    date_text = Style.BOLD + now_local.strftime("%b %d, %Y") + Style.RESET
     time_text = now_local.strftime("%A %I:%M %p")
 
     now_gmt = now_utc.astimezone(pytz.timezone("GMT"))
@@ -63,8 +109,8 @@ def format_and_display_cli(data_table, center_headers=True):
         return
 
     display_table = tabulate(data_table,
-                             headers=["Country", "Cases", "New Cases", "Deaths", "New Deaths"],
-                             colalign=("left", "right", "left", "right", "left"),
+                             headers=["\nCountry", "Total\nCases", "Active\nCases", "New\nCases", "Total\nDeaths", "New\nDeaths"],
+                             colalign=("left", "right", "right", "left", "right", "left"),
                              tablefmt="fancy_grid")
     table_rows = display_table.split("\n")
     table_width = len(table_rows[0])
@@ -83,26 +129,19 @@ def format_and_display_cli(data_table, center_headers=True):
 
     # format only headers to be centered, regardless of column alignment (not supported in tabulate)
     if center_headers:
-        split_header = table_rows[1].split("│")
-
-        for i, header_str in enumerate(split_header):
-            width = len(header_str)
-            stripped_header = header_str.strip()
-            split_header[i] = stripped_header.center(width)
-
-        table_rows[1] = "│".join(split_header)
+        force_align(table_rows, (1, 2))
 
     # Display data
     print()
     print()
 
-    print(title_text.center(terminal_width) + "\n")
-    print(date_text.center(terminal_width))
+    print(title_text.center(terminal_width + 6) + "\n")
+    print(date_text.center(terminal_width + 6))
     print(time_text.center(terminal_width))
     print(gmt_text.center(terminal_width))
 
     for row in table_rows:
-        print(row.center(terminal_width))
+        print(left_whitespace_offset + row)
 
     print()
     print("Note".center(terminal_width))
@@ -122,6 +161,7 @@ def make_valid(str_entry):
                      "car": "CAR", "central african republic": "CAR",
                      "guinea bissau": "Guinea-Bissau",
                      "timor leste": "Timor-Leste"}
+
     clean_str = str_entry.strip().lower()
 
     if clean_str in varying_names:
@@ -131,6 +171,9 @@ def make_valid(str_entry):
 
 
 if __name__ == "__main__":
+    # use Colorama to make colored font work on Windows
+    colorama.init()
+
     default_countries = ["USA", "China", "Italy", "Canada", "Thailand", "Taiwan"]
     countries_of_interest = []
 

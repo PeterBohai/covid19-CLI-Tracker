@@ -3,16 +3,26 @@
 ## Overview
 This is a CLI tracker of the Coronavirus (COVID-19) for specific countries of interest.
 Information for each country is live and current. They include data on: total cases, total deaths, new cases, new deaths.
-All the COVID-19 data displayed are extracted from [Worldometers](https://www.worldometers.info/coronavirus/)
+All the COVID-19 data displayed are extracted from [Worldometers](https://www.worldometers.info/coronavirus/).
+
+**Note** Formatting may not display properly on Windows as there is a lack of ANSI escape sequence support. No tests have been run on Windows yet. If you dicover any bugs regrading this (or anything), please contact me.
+
+### Installation
+Make sure that Python is version 3.6+.
+<br>
+Simply install the necessary dependencies first by running the command `pip install -r requirements.txt` (use `pip3` if on macOS)
 
 ### Dependencies
 The CLI is a Python 3 (supports **3.6+**) script utilizing the following external libraries:
 
 * [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
+* [colorama](https://pypi.org/project/colorama/)
+* [pytz](https://pypi.org/project/pytz/)
 * [requests](https://pypi.org/project/requests/)
 * [tabulate](https://pypi.org/project/tabulate/)
-* [pytz](https://pypi.org/project/pytz/)
 
+For specific versions of these dependencies, please check the requirements file in this repo.
+<br>
 **Note** on Beautiful Soup and using the best parser:
 
 * lxml's HTML parser `("lxml")`
@@ -28,6 +38,8 @@ To change the parser, simply change the second string argument in the initializa
 A prompt will be shown to the user upon execution. 
 If the user wishes to display the default countries, simply enter blank to conintue.
 The default countries displayed are *USA, Italy, China, Canada, Thailand, and Taiwan*.
+
+**Regarding Color**: The colored fonts displayed could be different depending on the theme preferences set for the command line/terminal.
 
 **Display other countries** (Not default): Upon seeing the initial prompt, enter any character or string. Type desired countries to observe by typing their official names separated by commas.
 
