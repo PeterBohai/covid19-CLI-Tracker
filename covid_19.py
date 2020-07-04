@@ -155,7 +155,7 @@ def make_valid(str_entry):
     varying_names = {"united states": "USA", "usa": "USA", "us": "USA", "america": "USA", "states": "USA",
                      "united kingdom": "UK", "u.k.": "UK", "uk": "UK", "britain": "UK", "great britain": "UK",
                      "south korea": "S. Korea",
-                     "hk": "Hong Kong",
+                     "hk": "Hong Kong", "hong kong": "Hong Kong",
                      "uae": "UAE", "united arab emirates": "UAE", "emirates": "UAE",
                      "drc": "DRC", "dr congo": "DRC", "democratic republic of the congo": "DRC",
                      "car": "CAR", "central african republic": "CAR",
