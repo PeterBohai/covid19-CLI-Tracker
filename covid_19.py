@@ -1,10 +1,10 @@
 import os
 import datetime
 
-from bs4 import BeautifulSoup
 import colorama
 import pytz
 import requests
+from bs4 import BeautifulSoup
 from tabulate import tabulate
 
 
@@ -33,23 +33,28 @@ def extract_data(target_countries_list):
 
     soup = BeautifulSoup(source, "lxml")
     tbody = soup.find("tbody")
-    country_row = tbody.find_all("tr")
+    country_rows = tbody.find_all("tr", {"style": ""})
 
     # Extract wanted data
     data_matrix = []
-    for country in country_row:
-        if country.find("td").get_text() in target_countries_list:
-            data_cols = country.find_all("td")
+    for row in country_rows:
+        name_td = row.find("td", {"style": "font-weight: bold; font-size:15px; text-align:left;"})
+        name = ""
+        if name_td:
+            name_anchor = name_td.find("a")
+            name = name_anchor.get_text() if name_anchor else name_td.find("span").get_text()
 
-            name = data_cols[0].get_text().strip()
-            tot_cases = Style.RED + data_cols[1].get_text().strip() + Style.RESET
-            act_cases = Style.YELLOW + data_cols[6].get_text().strip() + Style.RESET
-            deaths = Style.BLUE_D + data_cols[3].get_text().strip() + Style.RESET
+        if name in target_countries_list:
+            data_cols = row.find_all("td")
 
-            new_cases = data_cols[2].get_text().strip()
-            new_deaths = data_cols[4].get_text().strip()
+            total_cases = Style.RED + data_cols[2].get_text().strip() + Style.RESET
+            active_cases = Style.YELLOW + data_cols[8].get_text().strip() + Style.RESET
+            total_deaths = Style.BLUE_D + data_cols[4].get_text().strip() + Style.RESET
 
-            data_matrix.append([name, tot_cases, act_cases, new_cases, deaths, new_deaths])
+            new_cases = data_cols[3].get_text().strip()
+            new_deaths = data_cols[5].get_text().strip()
+
+            data_matrix.append([name, total_cases, active_cases, new_cases, total_deaths, new_deaths])
 
     def strip_ansi(row):
         new_str = row[1].replace(",", "")
@@ -174,7 +179,7 @@ if __name__ == "__main__":
     # use Colorama to make colored font work on Windows
     colorama.init()
 
-    default_countries = ["USA", "China", "Italy", "Canada", "Thailand", "Taiwan"]
+    default_countries = ["USA", "China", "Canada", "Thailand", "Taiwan", "Hong Kong"]
     countries_of_interest = []
 
     width = 0
@@ -199,6 +204,3 @@ if __name__ == "__main__":
 
     covid19_table = extract_data(countries_of_interest)
     format_and_display_cli(covid19_table)
-
-
-
