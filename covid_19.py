@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime
 
 import colorama
 import pytz
@@ -97,8 +97,8 @@ def force_align(table_rows, row_index, colalign="center"):
 def format_and_display_cli(data_table, center_headers=True):
     title_text = Style.UNDERLINE + "Coronavirus (COVID-19) Tracker for Countries of Interest" + Style.RESET
 
-    now_utc = datetime.datetime.now(pytz.timezone("UTC"))
-    now_local = datetime.datetime.now()
+    now_utc = datetime.now(pytz.timezone("UTC"))
+    now_local = datetime.now()
     date_text = Style.BOLD + now_local.strftime("%b %d, %Y") + Style.RESET
     time_text = now_local.strftime("%A %I:%M %p")
 
